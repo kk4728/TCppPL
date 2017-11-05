@@ -1,0 +1,60 @@
+
+
+
+Chapter 13 Template
+
+	13.2
+		13.2.3 Template paramters
+			1，所有整型模板参数 在实例化模板时必须是常量，不能是变量。Buffer<int , i> -> error
+			2，非模板参数必须是在实例化时必须是constant
+		13.2.4 类型相当  epauivalence
+			1，typedef 定义的类型不是新的类型，但char, unsinged char 认为是两种不同的类型
+			2，编译器可以评估常量类型，如 Buffer<int ,20-10>  Buffer<int , 10>是同一种类型
+		13.2.5 类型检查
+			1，基本、简单的语法错误在编译期间编译器会检查
+			2，部分错误，如链接、定义可能会延迟检查。链接期才会检查
+	
+	13.3 函数模板
+		13.3.1 模板参数
+			1，编译器可以从函数参数列表中推断参数类型以及非类型参数，但是在类模板中是无法推断出来的。
+			2，如果模板参数无法推断出来，那么就必须显示地指定出来(explicit)。如通过返回类型
+			template<class T, class U> T implicit_cast(U u) { return u; }
+			->	implicit_cast(i); //error
+				implicit_cast<double> (i);//T:double, U:int
+				implicit_cast<char, double>(i);//T:char, U:double
+				implicit_cast<char*, int>(i); // T:char*, U:int //error!!!
+		13.3.2 函数模板重载
+			
+
+
+
+Chapter 14 异常处理
+	
+
+	14.6.1 检查异常描述
+		在编译期间通常难以检查所有异常，对一个函数来说，假设她可能会抛出任何异常。
+
+		对函数而言，函数的异常申明和定义必须一致。
+		int f() throw (std::bad_alloc);
+		int f() // error！
+		{
+		
+		}  
+
+		异常描述并不一定需要检查，尤其是边界。因为对一个大系统，或者长期维护的系统来说，很多组件可能早已完成并良好运行。其实现和申明可能是分离的，部分代码可能无法再直接访问看到!
+		可以使用虚函数配合继承来处理,但是要保证子类的异常不能比基类更严格(抛出更多的异常)!
+		class B
+		{
+		public:
+			virtual void f();
+
+		}
+
+		可以通过函数指针来提升异常限制restrictive. 但不能降低异常限制
+		void f() throw(X);
+		void (*pf1)() throw(X, Y) = &f; //ok
+		void (*pf2)() throw() = &f;  //error:
+
+		typedef 关键字不能用在异常函数中。
+		typedef void (*pf3) () throw(X); 
+
